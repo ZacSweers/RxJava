@@ -16,21 +16,31 @@
 
 package rx.schedulers;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-import java.util.concurrent.*;
-
+import org.junit.Before;
 import org.junit.Test;
-
+import rx.Scheduler;
 import rx.Scheduler.Worker;
 import rx.functions.Action0;
 import rx.internal.schedulers.GenericScheduledExecutorService;
 import rx.internal.util.RxRingBuffer;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 public class SchedulerLifecycleTest {
+
+    @Before
+    public void setUp() {
+        // Force an eager init of the schedulers
+        Scheduler computationScheduler = Schedulers.computation();
+    }
+
     @Test
     public void testShutdown() throws InterruptedException {
         tryOutSchedulers();
