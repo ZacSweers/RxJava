@@ -18,7 +18,6 @@ package rx.schedulers;
 
 import org.junit.Before;
 import org.junit.Test;
-import rx.Scheduler;
 import rx.Scheduler.Worker;
 import rx.functions.Action0;
 import rx.internal.schedulers.GenericScheduledExecutorService;
@@ -37,8 +36,7 @@ public class SchedulerLifecycleTest {
 
     @Before
     public void setUp() {
-        // Force an eager init of the schedulers
-        Scheduler computationScheduler = Schedulers.computation();
+        GenericScheduledExecutorService.getInstance();
     }
 
     @Test
