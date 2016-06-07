@@ -16,7 +16,6 @@
 
 package rx.schedulers;
 
-import org.junit.Before;
 import org.junit.Test;
 import rx.Scheduler.Worker;
 import rx.functions.Action0;
@@ -33,11 +32,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 public class SchedulerLifecycleTest {
-
-    @Before
-    public void setUp() {
-        GenericScheduledExecutorService.getInstance();
-    }
 
     @Test
     public void testShutdown() throws InterruptedException {

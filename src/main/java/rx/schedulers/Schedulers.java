@@ -168,7 +168,6 @@ public final class Schedulers {
      */
     @Experimental
     public static void reset() {
-        shutdown();
         INSTANCE.set(null);
     }
     
