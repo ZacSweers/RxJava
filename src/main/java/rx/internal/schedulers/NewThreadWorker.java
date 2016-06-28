@@ -15,17 +15,17 @@
  */
 package rx.internal.schedulers;
 
-import java.lang.reflect.*;
-import java.util.Iterator;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
-
 import rx.*;
 import rx.exceptions.Exceptions;
 import rx.functions.Action0;
 import rx.internal.util.*;
-import rx.plugins.*;
+import rx.plugins.RxJavaHooks;
 import rx.subscriptions.*;
+
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static rx.internal.util.PlatformDependent.ANDROID_API_VERSION_IS_NOT_ANDROID;
 
@@ -43,7 +43,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     private static final boolean SHOULD_TRY_ENABLE_CANCEL_POLICY;
     /** The purge frequency in milliseconds. */
     public static final int PURGE_FREQUENCY;
-    private static final ConcurrentHashMap<ScheduledThreadPoolExecutor, ScheduledThreadPoolExecutor> EXECUTORS;
+    private static final Map<ScheduledThreadPoolExecutor, ScheduledThreadPoolExecutor> EXECUTORS;
     private static final AtomicReference<ScheduledExecutorService> PURGE;
     /**
      * Improves performance of {@link #tryEnableCancelPolicy(ScheduledExecutorService)}.
@@ -57,7 +57,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     private static final Object SET_REMOVE_ON_CANCEL_POLICY_METHOD_NOT_SUPPORTED = new Object();
     
     static {
-        EXECUTORS = new ConcurrentHashMap<ScheduledThreadPoolExecutor, ScheduledThreadPoolExecutor>();
+        EXECUTORS = Collections.synchronizedMap(new HashMap<ScheduledThreadPoolExecutor, ScheduledThreadPoolExecutor>());
         PURGE = new AtomicReference<ScheduledExecutorService>();
         PURGE_FREQUENCY = Integer.getInteger(FREQUENCY_KEY, 1000);
 

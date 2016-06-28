@@ -15,12 +15,8 @@
  */
 package rx.internal.operators;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
-import rx.*;
 import rx.Observable.*;
+import rx.*;
 import rx.exceptions.Exceptions;
 import rx.functions.*;
 import rx.internal.producers.ProducerArbiter;
@@ -29,6 +25,10 @@ import rx.observables.GroupedObservable;
 import rx.observers.Subscribers;
 import rx.plugins.RxJavaHooks;
 import rx.subscriptions.Subscriptions;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.*;
 
 /**
  * Groups the items emitted by an Observable according to a specified criterion, and emits these
@@ -152,7 +152,7 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
             this.groupCount = new AtomicInteger(1);
             this.wip = new AtomicInteger();
             if (mapFactory == null) {
-                this.groups = new ConcurrentHashMap<Object, GroupedUnicast<K, V>>();
+                this.groups = Collections.synchronizedMap(new HashMap<Object, GroupedUnicast<K, V>>());
                 this.evictedKeys = null;
             } else {
                 this.evictedKeys = new ConcurrentLinkedQueue<K>();
