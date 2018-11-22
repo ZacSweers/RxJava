@@ -71,7 +71,8 @@ dependencies {
 }
 
 tasks.withType(JavaCompile).configureEach {
-//  options.compilerArgs << "-Xlint:all" << "-Werror" // Can't enable due to targeting java 6, which is a warning 🙃
+  options.compilerArgs << "-Xlint:all" << "-Xmaxerrs" << "1000" << "-Xmaxwarns" << "1000"
+//  options.compilerArgs << "-Werror" // Can't enable due to targeting java 6, which is a warning 🙃
   options.errorprone {
     check("NullAway", net.ltgt.gradle.errorprone.CheckSeverity.ERROR)
     option("NullAway:AnnotatedPackages", "io.reactivex")
