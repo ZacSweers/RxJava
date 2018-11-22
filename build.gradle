@@ -52,14 +52,10 @@ repositories {
   mavenCentral()
 }
 
-// we use this config to get the path of the JDK 9 javac jar, to
-// stick it in the bootclasspath when running tests
-configurations.maybeCreate("epJavac")
-
 dependencies {
     signature "org.codehaus.mojo.signature:java16:1.1@signature"
 
-    epJavac "com.google.errorprone:javac:9+181-r4173-1" // For JDK 8 support
+    errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
     errorprone "com.google.errorprone:error_prone_core:$errorProneVersion"
     errorprone "com.uber.nullaway:nullaway:$nullawayVersion"
 
@@ -75,7 +71,7 @@ dependencies {
 }
 
 tasks.withType(JavaCompile).configureEach {
-  options.compilerArgs << "-Xlint:all" << "-Werror"
+//  options.compilerArgs << "-Xlint:all" << "-Werror"
   options.errorprone {
     check("NullAway", net.ltgt.gradle.errorprone.CheckSeverity.ERROR)
     option("NullAway:AnnotatedPackages", "io.reactivex")
