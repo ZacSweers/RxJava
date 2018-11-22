@@ -361,6 +361,8 @@ tasks.withType(JavaCompile).configureEach {
   options.compilerArgs << "-Xlint:all" << "-Werror"
   options.errorprone {
     enabled = false
+    check("NullAway", net.ltgt.gradle.errorprone.CheckSeverity.ERROR)
+    option("NullAway:AnnotatedPackages", "io.reactivex")
   }
 }
 
@@ -371,6 +373,7 @@ configurations.maybeCreate("epJavac")
 dependencies {
   epJavac "com.google.errorprone:javac:9+181-r4173-1" // For JDK 8 support
   errorprone "com.google.errorprone:error_prone_core:2.3.2"
+  errorprone "com.uber.nullaway:nullaway:0.6.3"
 }
 
 apply from: file("gradle/javadoc_cleanup.gradle")
