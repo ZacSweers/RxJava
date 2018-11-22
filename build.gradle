@@ -1,4 +1,10 @@
 plugins {
+  id "java-library"
+  id "checkstyle"
+  id "jacoco"
+  id "maven"
+  id "osgi"
+  id "eclipse"
   id "ru.vyarus.animalsniffer" version "1.4.6"
   id "com.github.hierynomus.license" version "0.14.0"
   id "me.champeau.gradle.jmh" version "0.4.5"
