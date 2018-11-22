@@ -5,6 +5,7 @@ plugins {
   id "maven"
   id "osgi"
   id "eclipse"
+  id "net.ltgt.errorprone" version "0.6"
   id "ru.vyarus.animalsniffer" version "1.4.6"
   id "com.github.hierynomus.license" version "0.14.0"
   id "me.champeau.gradle.jmh" version "0.4.5"
@@ -29,18 +30,6 @@ if (releaseTag != null && !releaseTag.isEmpty()) {
 }
 
 description = "RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM."
-
-apply plugin: "java-library"
-apply plugin: "checkstyle"
-apply plugin: "jacoco"
-apply plugin: "ru.vyarus.animalsniffer"
-apply plugin: "maven"
-apply plugin: "osgi"
-apply plugin: "me.champeau.gradle.jmh"
-apply plugin: "com.github.hierynomus.license"
-apply plugin: "com.jfrog.bintray"
-apply plugin: "com.jfrog.artifactory"
-apply plugin: "eclipse"
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
@@ -366,6 +355,22 @@ if (rootProject.hasProperty("releaseMode")) {
       
       build.finalizedBy(bintrayUpload)
    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+  options.compilerArgs << "-Xlint:all" << "-Werror"
+  options.errorprone {
+    enabled = false
+  }
+}
+
+// we use this config to get the path of the JDK 9 javac jar, to
+// stick it in the bootclasspath when running tests
+configurations.maybeCreate("epJavac")
+
+dependencies {
+  epJavac "com.google.errorprone:javac:9+181-r4173-1" // For JDK 8 support
+  errorprone "com.google.errorprone:error_prone_core:2.3.2"
 }
 
 apply from: file("gradle/javadoc_cleanup.gradle")
