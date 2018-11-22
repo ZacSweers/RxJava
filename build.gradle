@@ -37,9 +37,11 @@ targetCompatibility = JavaVersion.VERSION_1_6
 // Dependency versions
 // ---------------------------------------
 
+def errorProneVersion = "2.3.2"
 def junitVersion = "4.12"
 def reactiveStreamsVersion = "1.0.2"
 def mockitoVersion = "2.1.0"
+def nullawayVersion = "0.6.3"
 def jmhLibVersion = "1.20"
 def testNgVersion = "6.11"
 def guavaVersion = "24.0-jre"
@@ -50,8 +52,16 @@ repositories {
   mavenCentral()
 }
 
+// we use this config to get the path of the JDK 9 javac jar, to
+// stick it in the bootclasspath when running tests
+configurations.maybeCreate("epJavac")
+
 dependencies {
     signature "org.codehaus.mojo.signature:java16:1.1@signature"
+
+    epJavac "com.google.errorprone:javac:9+181-r4173-1" // For JDK 8 support
+    errorprone "com.google.errorprone:error_prone_core:$errorProneVersion"
+    errorprone "com.uber.nullaway:nullaway:$nullawayVersion"
 
     api "org.reactivestreams:reactive-streams:$reactiveStreamsVersion"
     jmh "org.reactivestreams:reactive-streams:$reactiveStreamsVersion"
@@ -62,6 +72,14 @@ dependencies {
     testImplementation "org.reactivestreams:reactive-streams-tck:$reactiveStreamsVersion"
     testImplementation "org.testng:testng:$testNgVersion"
     testImplementation "com.google.guava:guava:$guavaVersion"
+}
+
+tasks.withType(JavaCompile).configureEach {
+  options.compilerArgs << "-Xlint:all" << "-Werror"
+  options.errorprone {
+    check("NullAway", net.ltgt.gradle.errorprone.CheckSeverity.ERROR)
+    option("NullAway:AnnotatedPackages", "io.reactivex")
+  }
 }
 
 javadoc {
@@ -355,25 +373,6 @@ if (rootProject.hasProperty("releaseMode")) {
       
       build.finalizedBy(bintrayUpload)
    }
-}
-
-tasks.withType(JavaCompile).configureEach {
-  options.compilerArgs << "-Xlint:all" << "-Werror"
-  options.errorprone {
-    enabled = false
-    check("NullAway", net.ltgt.gradle.errorprone.CheckSeverity.ERROR)
-    option("NullAway:AnnotatedPackages", "io.reactivex")
-  }
-}
-
-// we use this config to get the path of the JDK 9 javac jar, to
-// stick it in the bootclasspath when running tests
-configurations.maybeCreate("epJavac")
-
-dependencies {
-  epJavac "com.google.errorprone:javac:9+181-r4173-1" // For JDK 8 support
-  errorprone "com.google.errorprone:error_prone_core:2.3.2"
-  errorprone "com.uber.nullaway:nullaway:0.6.3"
 }
 
 apply from: file("gradle/javadoc_cleanup.gradle")
